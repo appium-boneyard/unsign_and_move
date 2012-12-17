@@ -26,9 +26,13 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 package unsign;
+
+import static unsign.Utils.close;
+import static unsign.Utils.delete;
+import static unsign.Utils.transferFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,8 +66,14 @@ public class Unsign {
 
         try {
 
+            // renameTo often fails so fall back to file transfer.
             if (!input.renameTo(renamedInput)) {
-                throw new RuntimeException("Unable to rename " + input);
+                try {
+                    transferFile(input, renamedInput);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("Unable to rename " + input);
+                }
             }
 
             inputZip = new ZipInputStream(new FileInputStream(renamedInput));
@@ -89,27 +99,14 @@ public class Unsign {
                 }
             }
         } catch (final Exception e) {
-            System.out.println("Unable to sign zip " + input.getAbsolutePath());
             e.printStackTrace();
+            throw new RuntimeException("Unable to sign zip " + input.getAbsolutePath());
         } finally {
-            if (inputZip != null) {
-                try {
-                    inputZip.close();
-                } catch (final IOException e) {
-                }
-            }
-            if (outputZip != null) {
-                try {
-                    outputZip.close();
-                } catch (final IOException e) {
-                }
-            }
+            close(inputZip);
+            close(outputZip);
         }
 
-        // Remove input.
-        if (!renamedInput.delete()) {
-            renamedInput.deleteOnExit();
-        }
+        delete(renamedInput);
     }
 
     public static void main(String[] args) {
