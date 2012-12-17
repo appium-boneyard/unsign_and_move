@@ -107,7 +107,9 @@ public class Unsign {
         }
 
         // Remove input.
-        renamedInput.delete();
+        if (!renamedInput.delete()) {
+            renamedInput.deleteOnExit();
+        }
     }
 
     public static void main(String[] args) {
