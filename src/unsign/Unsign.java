@@ -90,6 +90,7 @@ public class Unsign {
     public static void main(String[] args) {
         if (args == null || args.length < 1) {
             System.out.println("Usage: java -jar unsign.jar input.zip");
+            System.exit(0);
         }
 
         final File input = new File(args[0]);
