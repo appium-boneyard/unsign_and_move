@@ -78,6 +78,8 @@ public class Unsign {
                 while ((bytesRead = inputZip.read(buffer)) != -1) {
                     outputZip.write(buffer, 0, bytesRead);
                 }
+
+                outputZip.closeEntry();
             }
         } catch (final Exception e) {
             e.printStackTrace();
