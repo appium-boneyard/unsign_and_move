@@ -1,5 +1,7 @@
 .classpath
 .settings/
 bin/
-*.apk
+.idea/
+*.iml
 .DS_Store
+target/
